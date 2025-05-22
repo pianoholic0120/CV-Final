@@ -27,3 +27,52 @@
 
 * Pre-processing: kf_every, Q-align
 * Post-processing: voxel_grid_size (down-sample)
+
+## External Dependences
+1. ACE0
+    https://github.com/nianticlabs/acezero
+2. Droid-SLAM
+    https://github.com/princeton-vl/DROID-SLAM
+3. Q-Align
+    https://github.com/Q-Future/Q-Align
+4. COLMAP SfM
+    https://github.com/colmap/colmap
+
+
+## Cited
+ACE0:
+
+    @article{bhat2023zoedepth,
+    title={Zoe{D}epth: Zero-shot transfer by combining relative and metric depth},
+    author={Bhat, Shariq Farooq and Birkl, Reiner and Wofk, Diana and Wonka, Peter and M{\"u}ller, Matthias},
+    journal={arXiv},
+    year={2023}
+    }
+Droid-SLAM:
+
+    @article{teed2021droid,
+    title={{DROID-SLAM: Deep Visual SLAM for Monocular, Stereo, and RGB-D Cameras}},
+    author={Teed, Zachary and Deng, Jia},
+    journal={Advances in neural information processing systems},
+    year={2021}
+    }
+
+Q-Align:
+
+    @article{wu2023qalign,
+    title={Q-Align: Teaching LMMs for Visual Scoring via Discrete Text-Defined Levels},
+    author={Wu, Haoning and Zhang, Zicheng and Zhang, Weixia and Chen, Chaofeng and Li, Chunyi and Liao, Liang and Wang, Annan and Zhang, Erli and Sun, Wenxiu and Yan, Qiong and Min, Xiongkuo and Zhai, Guangtai and Lin, Weisi},
+    journal={arXiv preprint arXiv:2312.17090},
+    year={2023},
+    institution={Nanyang Technological University and Shanghai Jiao Tong University and Sensetime Research},
+    note={Equal Contribution by Wu, Haoning and Zhang, Zicheng. Project Lead by Wu, Haoning. Corresponding Authors: Zhai, Guangtai and Lin, Weisi.}
+    }
+
+COLMAP:
+
+    @inproceedings{schoenberger2016sfm,
+        author={Sch\"{o}nberger, Johannes Lutz and Frahm, Jan-Michael},
+        title={Structure-from-Motion Revisited},
+        booktitle={Conference on Computer Vision and Pattern Recognition (CVPR)},
+        year={2016},
+    }
