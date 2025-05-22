@@ -1,10 +1,21 @@
 # CV-Final
 
-## Environment
-
 ## Requirements & Installation
 
 ## File Structure
+
+## How to run (examples)
+
+First, you have to generate poses for desired image sequence. 
+
+> To sweep parameters (voxels, kf) of reconstruction
+
+    python cv25s_full_pipeline.py --data_root /path/to/your_file/with/7scenes/ --output_dir /path/to/save/your_results/ --voxels 0.0025,0.003 --kf 1,5
+
+> To compute accuracy w.r.t GT
+    
+    python acc_comp.py --pred_folder /path/to/your_file/with/point_clouds/ --gt_folder /path/to/your_file/with/gt7scenes/
+
 
 ## Ablation
 
