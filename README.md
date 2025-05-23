@@ -16,6 +16,25 @@ First, you have to generate poses for desired image sequence.
     
     python acc_comp.py --pred_folder /path/to/your_file/with/point_clouds/ --gt_folder /path/to/your_file/with/gt7scenes/
 
+> To run reloc3r to generate poses
+
+Specify train/test split under ./reloc3r/datasets/sevenscenes_retrieval.py
+
+Generate desired dataset under ./data/7scenes/{scene}/ with all seq-{seq_index}/ with *.color.png, *.depth.png, and *.poses.txt
+
+Since testing sequences doesn't contains pose.txt of each images, using ACE0-produced poses as pseudo ground truth.
+
+    python ace0_pose_as_pseudo_gt.py /path/to/your_file/with/7scenes/scene/test_sequence/poses_final.txt /path/to/reloc3r/data/7scenes/scene/seq-{sequence_index}/
+
+Run reloc3r pipeline
+
+    python eval_visloc.py --model "Reloc3rRelpose(img_size=512)" --dataset_db "SevenScenesRetrieval(scene='{}', split='train')" --dataset_q "ne='{}', split='train')" --dataset_q "SevenScenesRetrieval(scene='{}', split='test')" --dataset_relpose "SevenScenesRelpose(scene='{}', pair_id-topk 10nesRetrieval(scene='{}', split={}, resolution={})" --scene "{scene}" --topk 10
+
+Export pose from the information generated ny reloc
+
+    python export_visloc_pose.py --pair_info_path ./_db-q_pair_info/{scene}_q-retrieval_db-step\=1_topk\=10.npy --scene {scene} --topk 10 --output_file poses_final.txt --cache_folder ./_db-q_pair_info/
+
+
 
 ## Ablation
 
