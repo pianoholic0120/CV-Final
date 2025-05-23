@@ -53,11 +53,12 @@ Export pose from the information generated ny reloc
 | 295908 | ACE0 | ✅ (Q-align)  | ❌ | ❌ | ❌| Sparse  |  0.26 |  0.34 |
 | 296158 | cv25s + ACE0 | ✅ (15)  | ✅ (2.5e-3) | ✅ | ✅| Sparse  | 0.25  |  0.19 |
 | 296420 | Combined | ✅  | ✅ | ✅ | ✅| Sparse  | 0.16  |  0.16 |
+| 297182 | PCN Refined | ❌  | ✅ | ❌ | ✅| Sparse  | 0.20  |  0.34 |
 |  | cv25s + Droid-SLAM | ✅  | ✅ | ✅ | ✅| Sparse  |   |   |
 
 
 * Pre-processing: kf_every, Q-align
-* Post-processing: voxel_grid_size (down-sample)
+* Post-processing: voxel_grid_size (down-sample), PCN Refinement
 
 ## External Dependences
 1. ACE0
