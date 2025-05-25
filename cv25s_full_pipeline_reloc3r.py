@@ -1,4 +1,3 @@
-# reloc3r_seq_to_clean_pcd.py
 import argparse
 from pathlib import Path
 import numpy as np
