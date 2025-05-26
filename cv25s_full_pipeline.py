@@ -45,18 +45,29 @@ def preprocess_depth(raw: np.ndarray) -> np.ndarray:
 
 # Load poses
 def load_poses(seq_dir: Path, frames: List[str]) -> Dict[str,np.ndarray]:
-    poses={}; ace=seq_dir/POSE_TXT
-    if ace.exists():
-        for ln in ace.open():
-            name,qw,qx,qy,qz,x,y,z,*_ = ln.split()
-            Rcw=R.from_quat([float(qx),float(qy),float(qz),float(qw)]).as_matrix()
-            t=np.array([x,y,z],dtype=np.float32)
-            T=np.eye(4,dtype=np.float32); T[:3,:3]=Rcw; T[:3,3]=t
-            poses[name.replace(RGB_SUFFIX,"")]=T
+    poses={}; pose_file = seq_dir / "poses_final.txt"
+    if pose_file.exists():
+        for ln in pose_file.open():
+            tokens = ln.split()
+            if len(tokens) < 8:
+                continue
+            name = tokens[0]
+            qw, qx, qy, qz = map(float, tokens[1:5])
+            tx, ty, tz         = map(float, tokens[5:8])
+            # Rcw = R.from_quat([qx, qy, qz, qw]).as_matrix()
+            Rwc = R.from_quat([qx, qy, qz, qw]).as_matrix()
+            T   = np.eye(4, dtype=np.float32)
+            # T[:3,:3] = Rcw
+            T[:3,:3] = Rwc
+            T[:3, 3] = [tx, ty, tz]
+            if len(tokens) == 9:
+                T = np.linalg.inv(T)
+            poses[name.replace(RGB_SUFFIX, "")] = T
         return poses
     for f in frames:
         p=seq_dir/f"{f}.pose.txt"
-        if p.exists(): poses[f]=np.linalg.inv(np.loadtxt(p).astype(np.float32))
+        # if p.exists(): poses[f]=np.linalg.inv(np.loadtxt(p).astype(np.float32))
+        if p.exists(): poses[f]=np.loadtxt(p).astype(np.float32)
     if not poses: raise FileNotFoundError(f"No pose files in {seq_dir}")
     return poses
 
@@ -64,38 +75,44 @@ def load_poses(seq_dir: Path, frames: List[str]) -> Dict[str,np.ndarray]:
 def refine_poses_rgbd(frames: List[str], rgbds: List[o3d.geometry.RGBDImage],
                       intrinsic: o3d.camera.PinholeCameraIntrinsic,
                       init_poses: Dict[str,np.ndarray]) -> Dict[str,np.ndarray]:
-    pg=o3d.pipelines.registration.PoseGraph()
+    pg = o3d.pipelines.registration.PoseGraph()
     pg.nodes.append(o3d.pipelines.registration.PoseGraphNode(np.eye(4)))
     for i in range(len(frames)-1):
         f1, f2 = frames[i], frames[i+1]
-        # correct initial transform T1->2 = T_cw[f2] @ inv(T_cw[f1])
-        init = init_poses[f2] @ np.linalg.inv(init_poses[f1])
-        # direct unpack 0.19 API: (success, trans)
+        T1_cw = init_poses[f1]  
+        T2_cw = init_poses[f2] 
+        T1_to_T2 = np.linalg.inv(T2_cw) @ T1_cw
+        
         result = o3d.pipelines.odometry.compute_rgbd_odometry(
-            rgbds[i], rgbds[i+1], intrinsic, init,
+            rgbds[i], rgbds[i+1], intrinsic, T1_to_T2,
             o3d.pipelines.odometry.RGBDOdometryJacobianFromHybridTerm())
         success, trans = result[0], result[1]
         if not success:
             print(f"Odometry failed {i}->{i+1}, using init")
-            trans = init
-        # use create_from_rgbd_image to get point clouds
+            trans = T1_to_T2
         pc1 = o3d.geometry.PointCloud.create_from_rgbd_image(rgbds[i], intrinsic)
         pc2 = o3d.geometry.PointCloud.create_from_rgbd_image(rgbds[i+1], intrinsic)
-        info=o3d.pipelines.registration.get_information_matrix_from_point_clouds(
+        info = o3d.pipelines.registration.get_information_matrix_from_point_clouds(
             pc1, pc2, 0.05, trans)
         pg.edges.append(o3d.pipelines.registration.PoseGraphEdge(
             i, i+1, trans, info, False))
         pg.nodes.append(o3d.pipelines.registration.PoseGraphNode(np.linalg.inv(trans)))
-    opt=o3d.pipelines.registration.GlobalOptimizationOption(
+    opt = o3d.pipelines.registration.GlobalOptimizationOption(
         max_correspondence_distance=0.05, edge_prune_threshold=0.25,
         preference_loop_closure=0.1, reference_node=0)
+    
     o3d.pipelines.registration.global_optimization(
         pg,
         o3d.pipelines.registration.GlobalOptimizationLevenbergMarquardt(),
         o3d.pipelines.registration.GlobalOptimizationConvergenceCriteria(),
         opt)
-    # return refined cam->world
-    return {f: np.linalg.inv(pg.nodes[i].pose) for i,f in enumerate(frames)}
+    refined_poses = {}
+    for i, f in enumerate(frames):
+        T_rel = pg.nodes[i].pose  
+        T_ref_to_world = init_poses[frames[0]] 
+        refined_poses[f] = T_ref_to_world @ T_rel
+    
+    return refined_poses
 
 # TSDF weight
 def compute_weight(depth: np.ndarray, voxel: float) -> np.ndarray:
