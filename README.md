@@ -53,6 +53,7 @@ Put the generated poses_final.py into the folder of testing sequence to be evalu
 | 296420 | Combined | ✅  | ✅ | ✅ | ✅| Sparse  | 0.16  |  0.16 |
 | 297182 | PCN Refined | ❌  | ✅ | ❌ | ✅| Sparse  | 0.20  |  0.34 |
 | 297998 | cv25s + Reloc3r | ❌  | ✅(5e-3)| ✅ | ✅| - (300000) | 0.02  |  0.01 |
+| 298700 | spann3r | ❌  | ✅(4e-3)| ❌ | ❌| - (300000) | 0.21  |  0.53 |
 |  | cv25s + Droid-SLAM | ✅  | ✅ | ✅ | ✅| Sparse  |   |   |
 
 
@@ -72,6 +73,9 @@ Put the generated poses_final.py into the folder of testing sequence to be evalu
     https://github.com/ffrivera0/reloc3r
 6. PCN (Point Completion Network)
     https://github.com/wentaoyuan/pcn?tab=readme-ov-file
+7. Spann3r
+    https://github.com/HengyiWang/spann3r
+
 
 
 
@@ -130,4 +134,13 @@ PCN:
     author    = {Yuan, Wentao and Khot, Tejas and Held, David and Mertz, Christoph and Hebert, Martial},
     booktitle = {3D Vision (3DV), 2018 International Conference on},
     year      = {2018}
+    }
+
+Spann3r:
+
+    @article{wang20243d,
+    title={3D Reconstruction with Spatial Memory},
+    author={Wang, Hengyi and Agapito, Lourdes},
+    journal={arXiv preprint arXiv:2408.16061},
+    year={2024}
     }
