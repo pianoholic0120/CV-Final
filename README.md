@@ -8,11 +8,11 @@
 
 First, you have to generate poses for desired image sequence. 
 
-> To sweep parameters (voxels, kf) of reconstruction
+> To sweep parameters (voxels, kf) of reconstruction based on ace0-generated poses:
 
     python cv25s_full_pipeline.py --data_root /path/to/your_file/with/7scenes/ --output_dir /path/to/save/your_results/ --voxels 0.0025,0.003 --kf 1,5
 
-> To compute accuracy w.r.t GT
+> To compute accuracy w.r.t GT:
     
     python acc_comp.py --pred_folder /path/to/your_file/with/point_clouds/ --gt_folder /path/to/your_file/with/gt7scenes/
 
@@ -22,17 +22,15 @@ Specify train/test split under ./reloc3r/datasets/sevenscenes_retrieval.py
 
 Generate desired dataset under ./data/7scenes/{scene}/ with all seq-{seq_index}/ with *.color.png, *.depth.png, and *.poses.txt
 
-Since testing sequences doesn't contains pose.txt of each images, using ACE0-produced poses as pseudo ground truth.
+- Testing sequences doesn't need pose.txt of each images.
 
-    python ace0_pose_as_pseudo_gt.py /path/to/your_file/with/7scenes/scene/test_sequence/poses_final.txt /path/to/reloc3r/data/7scenes/scene/seq-{sequence_index}/
-
-Run reloc3r pipeline
+Run reloc3r pipeline to generate poses_final.py
 
     python eval_visloc.py --model "Reloc3rRelpose(img_size=512)" --dataset_db "SevenScenesRetrieval(scene='{}', split='train')" --dataset_q "ne='{}', split='train')" --dataset_q "SevenScenesRetrieval(scene='{}', split='test')" --dataset_relpose "SevenScenesRelpose(scene='{}', pair_id-topk 10nesRetrieval(scene='{}', split={}, resolution={})" --scene "{scene}" --topk 10
 
-Export pose from the information generated ny reloc
+Put the generated poses_final.py into the folder of testing sequence to be evaluated, then run:
 
-    python export_visloc_pose.py --pair_info_path ./_db-q_pair_info/{scene}_q-retrieval_db-step\=1_topk\=10.npy --scene {scene} --topk 10 --output_file poses_final.txt --cache_folder ./_db-q_pair_info/
+    python cv25s_full_pipeline_reloc3r.py --seq_dir /path/to/the_folder/7scenes/{scenes}/test/seq-{sequence_index}/ --output /path/to/the_file/of/{scenes}-seq-{sequence_index}.ply
 
 
 
@@ -54,6 +52,7 @@ Export pose from the information generated ny reloc
 | 296158 | cv25s + ACE0 | ✅ (15)  | ✅ (2.5e-3) | ✅ | ✅| Sparse  | 0.25  |  0.19 |
 | 296420 | Combined | ✅  | ✅ | ✅ | ✅| Sparse  | 0.16  |  0.16 |
 | 297182 | PCN Refined | ❌  | ✅ | ❌ | ✅| Sparse  | 0.20  |  0.34 |
+| 297998 | cv25s + Reloc3r | ❌  | ✅(5e-3)| ✅ | ✅| - (300000) | 0.02  |  0.01 |
 |  | cv25s + Droid-SLAM | ✅  | ✅ | ✅ | ✅| Sparse  |   |   |
 
 
@@ -69,6 +68,12 @@ Export pose from the information generated ny reloc
     https://github.com/Q-Future/Q-Align
 4. COLMAP SfM
     https://github.com/colmap/colmap
+5. Reloc3r
+    https://github.com/ffrivera0/reloc3r
+6. PCN (Point Completion Network)
+    https://github.com/wentaoyuan/pcn?tab=readme-ov-file
+
+
 
 
 ## Cited
@@ -107,4 +112,22 @@ COLMAP:
         title={Structure-from-Motion Revisited},
         booktitle={Conference on Computer Vision and Pattern Recognition (CVPR)},
         year={2016},
+    }
+
+Reloc3r:
+
+    @article{reloc3r,
+    title={Reloc3r: Large-Scale Training of Relative Camera Pose Regression for Generalizable, Fast, and Accurate Visual Localization},
+    author={Dong, Siyan and Wang, Shuzhe and Liu, Shaohui and Cai, Lulu and Fan, Qingnan and Kannala, Juho and Yang, Yanchao},
+    journal={arXiv preprint arXiv:2412.08376},
+    year={2024}
+    }
+
+PCN:
+
+    @inProceedings{yuan2018pcn,
+    title     = {PCN: Point Completion Network},
+    author    = {Yuan, Wentao and Khot, Tejas and Held, David and Mertz, Christoph and Hebert, Martial},
+    booktitle = {3D Vision (3DV), 2018 International Conference on},
+    year      = {2018}
     }
