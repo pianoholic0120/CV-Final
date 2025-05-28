@@ -54,11 +54,20 @@ Put the generated poses_final.py into the folder of testing sequence to be evalu
 | 297182 | PCN Refined | ❌  | ✅ | ❌ | ✅| Sparse  | 0.20  |  0.34 |
 | 297998 | cv25s + Reloc3r | ❌  | ✅(5e-3)| ✅ | ✅| - (300000) | 0.02  |  0.01 |
 | 298700 | spann3r | ❌  | ✅(4e-3)| ❌ | ❌| - (300000) | 0.21  |  0.53 |
+| 299961 | cv25s + Reloc3r | ❌  | ✅(2.5e-3)| ✅ | ✅| - (300000) | 0.01  |  0.01 |
 |  | cv25s + Droid-SLAM | ✅  | ✅ | ✅ | ✅| Sparse  |   |   |
-
 
 * Pre-processing: kf_every, Q-align
 * Post-processing: voxel_grid_size (down-sample), PCN Refinement
+
+
+### parameters markdown
+
+| ID | Sor_k | Sor_std | r_radius | r_min | voxel_down_sample | # of points | Accuracy | Completeness | 
+| :-----| ----: | :----: | :-----| ----: | :----: |:----: | :----: |:----: |
+| 297998 | 20  | 2.0| 0.05 | 8| 0.005 |300000 | 0.02  |  0.01 |
+| 299961 | 20  | 0.8| 0.03 | 12| 0.0025 |300000 | 0.01  |  0.01 |
+
 
 ## External Dependences
 1. ACE0
