@@ -20,10 +20,10 @@ def parse_args():
     p.add_argument("--bbox_half_extent", type=float, default=3.0, help="+/-m around sequence barycentre")
     # statistical outlier removal
     p.add_argument("--sor_k",   type=int,   default=20)
-    p.add_argument("--sor_std", type=float, default=2.0)
+    p.add_argument("--sor_std", type=float, default=0.8) # original 2.0
     # radius outlier removal
-    p.add_argument("--r_radius", type=float, default=0.05)
-    p.add_argument("--r_min",    type=int,   default=8)
+    p.add_argument("--r_radius", type=float, default=0.03) # original 0.05
+    p.add_argument("--r_min",    type=int,   default=12) # original 8
     # final target pts
     p.add_argument("--max_points", type=int, default=300000)
     return p.parse_args()
@@ -116,7 +116,7 @@ def main():
     pcd = o3d.geometry.PointCloud(o3d.utility.Vector3dVector(pts))
     pcd.colors = o3d.utility.Vector3dVector(cols)
 
-    pcd = pcd.voxel_down_sample(0.005)
+    pcd = pcd.voxel_down_sample(0.0025) # original 0.005
 
     pcd, _ = pcd.remove_statistical_outlier(nb_neighbors=args.sor_k,
                                             std_ratio=args.sor_std)
