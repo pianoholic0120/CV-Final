@@ -55,7 +55,8 @@ Put the generated poses_final.py into the folder of testing sequence to be evalu
 | 297998 | cv25s + Reloc3r | ❌  | ✅(5e-3)| ✅ | ✅| - (300000) | 0.02  |  0.01 |
 | 298700 | spann3r | ❌  | ✅(4e-3)| ❌ | ❌| - (300000) | 0.21  |  0.53 |
 | 299961 | cv25s + Reloc3r | ❌  | ✅(2.5e-3)| ✅ | ✅| - (300000) | 0.01  |  0.01 |
-|  | cv25s + Droid-SLAM | ✅  | ✅ | ✅ | ✅| Sparse  |   |   |
+| 300466 | cv25s + Reloc3r | ❌  | ✅(2e-3)| ✅ | ✅| - (300000) | 0.01  |  0.01 |
+| 300486 | combine 300466 & 291723 | ❌  | ✅(2e-3)| ✅ | ✅| - (300000) | 0.01  |  0.01 |
 
 * Pre-processing: kf_every, Q-align
 * Post-processing: voxel_grid_size (down-sample), PCN Refinement
@@ -67,25 +68,22 @@ Put the generated poses_final.py into the folder of testing sequence to be evalu
 | :-----| ----: | :----: | :-----| ----: | :----: |:----: | :----: |:----: |
 | 297998 | 20  | 2.0| 0.05 | 8| 0.005 |300000 | 0.02  |  0.01 |
 | 299961 | 20  | 0.8| 0.03 | 12| 0.0025 |300000 | 0.01  |  0.01 |
+| 300466 | 25  | 0.6| 0.025 | 16| 0.002 |300000 | 0.01  |  0.01 |
 
 
 ## External Dependences
 1. ACE0
     https://github.com/nianticlabs/acezero
-2. Droid-SLAM
-    https://github.com/princeton-vl/DROID-SLAM
-3. Q-Align
+2. Q-Align
     https://github.com/Q-Future/Q-Align
-4. COLMAP SfM
+3. COLMAP SfM
     https://github.com/colmap/colmap
-5. Reloc3r
+4. Reloc3r
     https://github.com/ffrivera0/reloc3r
-6. PCN (Point Completion Network)
+5. PCN (Point Completion Network)
     https://github.com/wentaoyuan/pcn?tab=readme-ov-file
-7. Spann3r
+6. Spann3r
     https://github.com/HengyiWang/spann3r
-
-
 
 
 
@@ -97,14 +95,6 @@ ACE0:
     author={Bhat, Shariq Farooq and Birkl, Reiner and Wofk, Diana and Wonka, Peter and M{\"u}ller, Matthias},
     journal={arXiv},
     year={2023}
-    }
-Droid-SLAM:
-
-    @article{teed2021droid,
-    title={{DROID-SLAM: Deep Visual SLAM for Monocular, Stereo, and RGB-D Cameras}},
-    author={Teed, Zachary and Deng, Jia},
-    journal={Advances in neural information processing systems},
-    year={2021}
     }
 
 Q-Align:
