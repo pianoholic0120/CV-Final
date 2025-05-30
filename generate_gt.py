@@ -1,7 +1,7 @@
 import os 
 import os.path as osp
 from typing import List,Dict,Tuple
-
+import argparse
 from PIL import Image
 import cv2
 import numpy as np
@@ -253,7 +253,14 @@ def visualize_ply_point_cloud(ply_path):
     o3d.visualization.draw_geometries([pcd], point_show_normal=False)
     
 if __name__ == '__main__':
-    sequence_path = "/home/arthur/storage/7SCENES/stairs/test/seq-01/"
-    ply_path = "/home/arthur/storage/gt7scenes/stairs-seq-01.ply"
-    # seq2ply(sequence_path, ply_path, kf_every =20, voxel_grid_size = 7.5e-3)
-    seq2ply(sequence_path, ply_path, kf_every =1)  
+    p=argparse.ArgumentParser()
+    p.add_argument("--sequence_path", type=str, required=True,
+                   help="Path to the sequence directory containing frames")
+    p.add_argument("--ply_path", type=str, required=True,
+                     help="Path to save the output .ply file")
+
+    args=p.parse_args()
+    # sequence_path = "/home/arthur/storage/7scenes/fire/test/seq-03/"
+    # ply_path = "/home/arthur/storage/gt7scenes/fire-seq-03.ply"
+    # seq2ply(args.sequence_path, args.ply_path, kf_every =20, voxel_grid_size = 7.5e-3)
+    seq2ply(args.sequence_path, args.ply_path, kf_every =20, voxel_grid_size = 1e-2)  
