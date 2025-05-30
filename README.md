@@ -4,7 +4,7 @@
 
 ## Requirements & Installation
 
-You should prepare the following two environments to run our code.
+You should prepare the following two environments (at least two) to run our code.
 
 ### Reloc3r - generate poses
  - You can directly follow the desciption of the original [reloc3r github codebase](https://github.com/ffrivera0/reloc3r) for detailed installation setup. 
@@ -15,29 +15,58 @@ You should prepare the following two environments to run our code.
 #### Create the environment using conda
 
     conda create -n reloc3r python=3.11 cmake=3.14.0
+
     conda activate reloc3r 
+
     conda install pytorch torchvision pytorch-cuda=12.1 -c pytorch -c nvidia  # use the correct version of cuda for your system
 
     pip install -r requirements.txt
+
     # optional: you can also install additional packages to:
+
     # - add support for HEIC images
+
     pip install -r requirements_optional.txt    
 
 #### Compile cuda kernels for RoPE
 
     cd croco/models/curope/
+
     python setup.py build_ext --inplace
+
     cd ../../../
 
 - The pre-trained model weights will automatically download when running the evaluation and demo code below.
 - Note that the pre-trained weights does not include 7scenes, which is crucial for valid comparison and testing.
+
+### ACE0 - generate poses
+
+- You can directly follow the desciption of the original [ACE0 github codebase](https://github.com/nianticlabs/acezero) for detailed installation setup. 
+
+#### Create the environment using conda
+
+    conda env create -f environment.yml
+
+    conda activate ace0
+
+#### C++/Python binding 
+
+(In order to register cameras to the scene, it relies on the RANSAC implementation of the DSAC* paper, which is written in C++)
+
+    cd dsacstar
+
+    python setup.py install
+
+    cd ..
 
 ### Main body - 2D images & poses to 3D point cloud
 
 #### Create the environment using conda
 
     conda env create -f environment.yml -n {scenes310}
+
     conda activate {scenes310}
+
     pip install -r requirements.txt
 
 
@@ -68,9 +97,81 @@ run:
 
     python cv25s_full_pipeline_reloc3r.py --seq_dir /path/to/the_folder/7scenes/{scenes}/test/seq-{sequence_index}/ --output /path/to/the_file/of/{scenes}-seq-{sequence_index}.ply
 
+### To run ACE0 to generate poses
+
+#### Data Preparation (for a specific sequence)
+
+Make two directory respectively for rgb images and depth(optional) images from the same sequence under same root directory.
+
+e.g. 
+
+    cd ./path/to/the_folder/7scenes/{scenes}/test/seq-{sequence_index}/
+
+    mkdir ../seq-{sequence_index}-images/
+
+    find . -type f -name "*.color.png" -exec cp {} ../seq-{sequence_index}-images/ \;
+    
+    # Optional
+    mkdir ../seq-{sequence_index}-depth/ 
+
+    find . -type f -name "*.depth.proj.png" -exec cp {} ../seq-{sequence_index}-depth/ \;  
+
+#### ACE0 poses (and point cloud) generation
+First change directory to ./ace0/acezero/
+
+    cd ./ace0/acezero/
+
+Run (with & withput depth): 
+
+    # without depth information
+    python ace_zero.py "/path/to/the_folder/7scenes/{scenes}/test/seq-{sequence_index}-images/*.png" ./result/  --export_point_cloud True
+
+    # with depth information
+    python ace_zero.py "/path/to/the_folder/7scenes/{scenes}/test/seq-{sequence_index}-images/*.png" ./result/  --depth_files "/path/to/the_folder/7scenes/{scenes}/test/seq-{sequence_index}-depth/*.png" --export_point_cloud True
+
+This will generate poses_final.txt and corresponding .ply file of the reconstruction.
+- note that it's also feasable to add argument     
+
+        --use_external_focal_length 525.0 
+    
+    to specify focal length or 
+    
+        --render_visualization True 
+    
+    to see visualization of the reconstruction process offline. (note that this visualization argument will sometimes pose errors when using together with the argument --export_point_cloud True)
+
+
 ### To sweep parameters (voxels, kf) of reconstruction based on ace0-generated poses:
 
     python cv25s_full_pipeline.py --data_root /path/to/your_file/with/7scenes/ --output_dir /path/to/save/your_results/ --voxels 0.0025,0.003 --kf 1,5
+
+### To refine pose using ACE0:
+
+#### Data preparation (for a specific sequence):
+
+Make a directory of rgb images from the desired sequence under same root directory.
+
+e.g. 
+
+    cd ./path/to/the_folder/7scenes/{scenes}/test/seq-{sequence_index}/
+
+    mkdir ../seq-{sequence_index}-test/
+
+    find . -type f -name "*.color.png" -exec cp {} ../seq-{sequence_index}-images/ \;
+
+#### Poses file converting
+To convert your poses_final.txt to each-frame pose estimation to the format following 7scenes dataset.
+
+    python reloc3r_to_ace0.py --poses_dir ./reloc3r_poses/ --output_root /path/to/the_folder/7scenes
+
+#### Refinement
+First, train ACE, and freeze the initial estimation of calibrations for 5000 iterations for more stable training.
+
+    python train_ace.py "./path/to/the_folder/7scenes/{scenes}/test/seq-{sequence_index}-test/*.png" ./results/  --pose_file "./path/to/the_folder/7scenes/{scenes}/test/seq-{sequence_index}/*.txt" --pose_refinement mlp --pose_refinement_wait 5000 --use_external_focal_length 525.0 --refine_calibration False
+
+Then, generate the final refined pose using:
+
+    python register_mapping.py "./path/to/the_folder/7scenes/{scenes}/test/seq-{sequence_index}-test/*.png" ./results/ --use_external_focal_length 525.0 --session ace_network
 
 ### To compute accuracy w.r.t GT:
     
@@ -78,47 +179,23 @@ run:
 
 ## Directory Highlights
 
-### - ace0_poses: 
-
-poses txt files generated by ace0
-
-### - gt7scenes: 
-
-gt point cloud generated without poses imformation
-
-### - reloc3r_poses: 
-
-poses txt files generated by reloc3r
-
-### - reloc3r_ace0_refined_poses: 
-
-poses txt files generated by first estimating poses by reloc3r than refining them using ACE0 (the results are not better than solely utilizing reloc3r)
+| Name | Utilation | 
+| :----- | :---- |
+ace0_poses | poses txt files generated by ace0 |
+gt7scenes | gt point cloud generated without poses imformation | 
+reloc3r_poses | poses txt files generated by reloc3r |
+reloc3r_ace0_refined_poses | poses txt files generated by first estimating poses by reloc3r than refining them using ACE0 (the results are not better than solely utilizing reloc3r) | 
 
 ## File Highlights
 
-### - cv35s_full_pipelline.py: 
-
-main function for generated desired point clouds with 2d images and generated poses txt files, for ace0
-
-### - cv35s_full_pipelline_reloc3r.py (generate_ply_files.sh): 
-
-main function for generated desired point clouds with 2d images and generated poses txt files, for reloc3r
-
-### - generate_gt.py (generate_gt.sh): 
-
-for generating gt point cloud, which requires 2D images and corresponding poses txt files
-
-### - reloc3r_to_ace0: 
-
-can be utilized to generate pose for each frames with poses files in ./ace0_poses/ and ./reloc3r_poses/
-
-### - point_cloud_down_sample.py: 
-
-down sample point cloud with tunable parameters
-
-### - ply_combine.py (ply_combine.sh): 
-
-can be used to combine two point clouds with pymeshlab (pymeshlab should be installed additionally)
+| Name | Utilation | 
+| :----- | :---- |
+cv35s_full_pipelline.py |main function for generated desired point clouds with 2d images and generated poses txt files, for ace0 |
+cv35s_full_pipelline_reloc3r.py (generate_ply_files.sh) | main function for generated desired point clouds with 2d images and generated poses txt files, for reloc3r |
+generate_gt.py (generate_gt.sh) | for generating gt point cloud, which requires 2D images and corresponding poses txt files |
+reloc3r_to_ace0.py | can be utilized to generate pose for each frames with poses files in ./ace0_poses/ and ./reloc3r_poses/ |
+point_cloud_down_sample.py | down sample point cloud with tunable parameters |
+ply_combine.py (ply_combine.sh) | can be used to combine two point clouds with pymeshlab (pymeshlab should be installed additionally) |
 
 ## Ablation
 
