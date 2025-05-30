@@ -30,14 +30,14 @@ stat_7Scenes = {
         },
     'seqs_test':{
         'chess': [3],
-        'fire': [3],
+        'fire': [4],
         'heads': [1],
         'office': [9],
-        'pumpkin': [1],
+        'pumpkin': [7],
         'redkitchen': [14],
         'stairs': [1]
         },
-    'n_frames': {
+    'n_frames': { # number of frames in training sequence
         'chess': 1000, 
         'fire': 1000, 
         'heads': 1000, 
@@ -45,6 +45,15 @@ stat_7Scenes = {
         'pumpkin': 1000, 
         'redkitchen': 1000, 
         'stairs': 500
+        },
+    'n_frames_test': { # number of frames in testing sequence
+        'chess': 1000, # 10 for sparse case
+        'fire': 1000,  # 10 for sparse case
+        'heads': 1000, 
+        'office': 1000, 
+        'pumpkin': 1000,  # 10 for sparse case
+        'redkitchen': 1000, 
+        'stairs': 500 # 10 for sparse case
         }
 }
 mask_gt_db_cam_7Scenes = 'seq-{:02d}_{:06d}_pose-db.txt'
@@ -64,13 +73,22 @@ class SevenScenesRetrieval:
         self.names_color = []
 
         assert self.split in ['train', 'test']
-        seqs = stat_7Scenes['seqs_{}'.format(self.split)][self.scene]
-        for seq in seqs:
-            for fid in range(stat_7Scenes['n_frames'][scene]):
-                # name = '{}/{}/seq-{:02d}/{}'.format(self.root_folder, self.scene, seq, self.color_file_format).format(fid)
-                name = f"{self.root_folder}/{self.scene}/seq-{seq:02d}/{self.color_file_format.format(fid)}"
-                self.names_color.append(name)
+        if self.split == 'train':
+            seqs = stat_7Scenes['seqs_{}'.format(self.split)][self.scene]
+            for seq in seqs:
+                for fid in range(stat_7Scenes['n_frames'][scene]):
+                    # name = '{}/{}/seq-{:02d}/{}'.format(self.root_folder, self.scene, seq, self.color_file_format).format(fid)
+                    name = f"{self.root_folder}/{self.scene}/seq-{seq:02d}/{self.color_file_format.format(fid)}"
+                    self.names_color.append(name)
 
+        if self.split == 'test':
+            seqs = stat_7Scenes['seqs_{}'.format(self.split)][self.scene]
+            for seq in seqs:
+                for fid in range(stat_7Scenes['n_frames_test'][scene]):
+                    # name = '{}/{}/seq-{:02d}/{}'.format(self.root_folder, self.scene, seq, self.color_file_format).format(fid)
+                    name = f"{self.root_folder}/{self.scene}/seq-{seq:02d}/{self.color_file_format.format(fid)}"
+                    self.names_color.append(name)
+    
     def load_image(self, name, device):
         color = cv2.imread(name)
         data = {}

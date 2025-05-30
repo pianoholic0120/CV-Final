@@ -126,7 +126,7 @@ def test(args):
 
     if 'SevenScenes' in args.dataset_q:
         seqs = stat_7Scenes['seqs_test'][args.scene]
-        beg, end = 0, stat_7Scenes['n_frames'][args.scene] - 1
+        beg, end = 0, stat_7Scenes['n_frames_test'][args.scene] - 1
         mask_gt_db_cam = mask_gt_db_cam_7Scenes
         mask_q2d_cam = mask_q2d_cam_7Scenes
         mask_gt_q_cam = mask_gt_q_cam_7Scenes

@@ -25,6 +25,9 @@
     - [Poses file converting](#poses-file-converting)
     - [Refinement](#refinement)
   - [To compute accuracy w.r.t GT](#to-compute-accuracy-wrt-gt)
+- [Reproduce](#reproduce)
+  - [Data Preparation](#data-preparation)
+  - [Reconstruction](#reconstruciton)
 - [Directory Highlights](#directory-highlights)
 - [File Highlights](#file-highlights)
 - [Ablation](#ablation)
@@ -281,7 +284,192 @@ ply_combine.py (ply_combine.sh) | can be used to combine two point clouds with p
 6. Spann3r
     https://github.com/HengyiWang/spann3r
 
+## Reproduce
 
+### Data Preparation
+
+You should prepare data for reloc3r follow the original [reloc3r github codebase](https://github.com/ffrivera0/reloc3r) and [description](#to-run-reloc3r-to-generate-poses) in my codebase.
+
+Note that you must specify the sequence number for which index of sequences are training data and which is for testing in ./reloc3r/datasets/sevenscenes_retrieval.py: Each time, only $\bold{one}$ index of testing sequence is given, and only that sequence data (along with all training sequences data) can be put under the directory /home/username/this_repository/reloc3r/data/7scenes/{scene_name}/. Also note the number of frames specifying in the file, you're required to modify when estimated sparse sequences.
+
+    'seqs_train':{
+        'chess': [1,2,4,6],
+        'fire': [1,2],
+        'heads': [2],
+        'office': [1,3,4,5,8,10],
+        'pumpkin': [2,3,6,8],
+        'redkitchen': [1,2,5,7,8,11,13],
+        'stairs': [2,3,5,6]
+        },
+    'seqs_test':{
+        'chess': [3],
+        'fire': [3], 
+        'heads': [1],
+        'office': [2], # 6, 7, 9
+        'pumpkin': [1],
+        'redkitchen': [3], # 4, 6, 12, 14
+        'stairs': [1]
+        },
+    'n_frames': { # number of frames in training sequence
+        'chess': 1000, 
+        'fire': 1000, 
+        'heads': 1000, 
+        'office': 1000, 
+        'pumpkin': 1000, 
+        'redkitchen': 1000, 
+        'stairs': 500
+        },
+    'n_frames_test': { # number of frames in testing sequence
+        'chess': 1000, # 10 for sparse case
+        'fire': 1000,  # 10 for sparse case
+        'heads': 1000, 
+        'office': 1000, 
+        'pumpkin': 1000,  # 10 for sparse case
+        'redkitchen': 1000, 
+        'stairs': 500 # 10 for sparse case
+        }
+
+For example, only seq-03 is testing sequence for chess scene, seq-01, seq-02, seq-04, and seq-06 are all training data which have pose ground truth.
+
+    /home/username/this_repository/
+    |-- reloc3r
+        |-- data/7scenes
+            |-- chess
+                |-- seq-01 (train structure)
+                |-- seq-02 (train structure)
+                |-- seq-03 (test structure)
+                |-- seq-04 (train structure)
+                |-- seq-06 (train structure)
+            |-- fire
+            |-- heads
+            |-- office
+            |-- pumpkin
+            |-- redkitchen
+            |-- stairs
+
+Then, you should be able to generate ./reloc3r/_db-q_pair_info/poses_final.txt for all 14 sequence desired one by one, as [here](#to-run-reloc3r-to-generate-poses) shows. You can also refer to the folder ./reloc3r_poses/ under this repository for all 14 estimated pose for these sequences.
+
+You are required to, then, put these txt files (change their names to poses_final.txt) into their corresponding testing sequences under your storage with 7scenes dataset. That is, we assume the 7scenes data you prepared is as follow:
+
+    /home/username/storage/7scenes/
+    |-- chess
+        |-- test
+            |-- seq-03
+                |-- frame-000000.color.png
+                |-- frame-000000.depth.png
+                |-- frame-000000.depth.proj.png
+                |-- frame-000000.pose.txt
+                |-- frame-000001.color.png
+                |-- frame-000001.depth.png
+                |-- frame-000001.depth.proj.png
+                |-- frame-000002.color.png
+                ...
+                |-- poses_final.txt
+            |-- seq-05 (sparse, please note the index!!!!!!!!!!!!!)
+                |-- frame-000000.color.png
+                |-- frame-000000.depth.png
+                |-- frame-000000.depth.proj.png
+                |-- frame-000000.pose.txt
+                |-- frame-000001.color.png
+                |-- frame-000001.depth.png
+                |-- frame-000001.depth.proj.png
+                |-- frame-000002.color.png
+                ...
+                |-- poses_final.txt
+        |-- train
+            |-- seq-01
+                |-- frame-000000.color.png
+                |-- frame-000000.depth.png
+                |-- frame-000000.depth.proj.png
+                |-- frame-000000.pose.txt
+                |-- frame-000001.color.png
+                |-- frame-000001.depth.png
+                |-- frame-000001.depth.proj.png
+                |-- frame-000001.pose.txt
+                |-- frame-000002.color.png
+                ...
+            |-- seq-02
+            |-- seq-04
+            |-- seq-06
+        TestSplit.txt
+        TrainSplit.txt
+    |-- fire
+        |-- test
+            |-- seq-03
+            |-- seq-04 (sparse)
+        |-- train
+            |-- seq-01
+            |-- seq-02
+        TestSplit.txt
+        TrainSplit.txt
+    |-- heads
+        |-- test
+            |-- seq-01
+        |-- train
+            |-- seq-02
+        TestSplit.txt
+        TrainSplit.txt
+    |-- office
+        |-- test
+            |-- seq-02
+            |-- seq-06
+            |-- seq-07
+            |-- seq-09
+        |-- Train
+            |-- seq-01
+            |-- seq-03
+            |-- seq-04
+            |-- seq-05
+            |-- seq-08
+            |-- seq-10
+        TestSplit.txt
+        TrainSplit.txt
+    |-- pumpkin
+        |-- test
+            |-- seq-01
+            |-- seq-07 (sparse)
+        |-- train
+            |-- seq-02
+            |-- seq-03
+            |-- seq-06
+            |-- seq-08
+        TestSplit.txt
+        TrainSplit.txt
+    |-- redkitchen
+        |-- test
+            |-- seq-03
+            |-- seq-04
+            |-- seq-06
+            |-- seq-12
+            |-- seq-14
+        |-- train
+            |-- seq-01
+            |-- seq-02
+            |-- seq-05
+            |-- seq-07
+            |-- seq-08
+            |-- seq-11
+            |-- seq-13
+        TestSplit.txt
+        TrainSplit.txt
+    |-- stairs
+        |-- test
+            |-- seq-01
+            |-- seq-04 (sparse)
+        |-- train
+            |-- seq-02
+            |-- seq-03
+            |-- seq-05
+            |-- seq-06
+        TestSplit.txt
+        TrainSplit.txt
+
+### Reconstruciton
+
+Based on [this](#to-reconstruct-based-on-reloc3r-generated-poses), you can now generated the point cloud one by one. Alternatively, you can modify the bash file (generate_ply_files.sh and generate_sparse_ply_files.sh) for proper paths of yours. Then simply run them to get the 14 testing point clouds and 4 sparse testing point cloud respectively.
+
+    bash generate_ply_files.sh
+    bash generate_sparse_ply_files.sh 
 
 ## Cited
 ACE0:
