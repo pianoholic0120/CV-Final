@@ -290,7 +290,7 @@ ply_combine.py (ply_combine.sh) | can be used to combine two point clouds with p
 
 You should prepare data for reloc3r follow the original [reloc3r github codebase](https://github.com/ffrivera0/reloc3r) and [description](#to-run-reloc3r-to-generate-poses) in my codebase.
 
-Note that you must specify the sequence number for which index of sequences are training data and which is for testing in ./reloc3r/datasets/sevenscenes_retrieval.py: Each time, only $\bold{one}$ index of testing sequence is given, and only that sequence data (along with all training sequences data) can be put under the directory /home/username/this_repository/reloc3r/data/7scenes/{scene_name}/. Also note the number of frames specifying in the file, you're required to modify when estimated sparse sequences.
+Note that you must specify the sequence number for which index of sequences are training data and which is for testing in ./reloc3r/datasets/sevenscenes_retrieval.py: Each time, only one index of testing sequence is given, and only that sequence data (along with all training sequences data) can be put under the directory /home/username/this_repository/reloc3r/data/7scenes/{scene_name}/. Also note the number of frames specifying in the file, you're required to modify when estimated sparse sequences.
 
     'seqs_train':{
         'chess': [1,2,4,6],
