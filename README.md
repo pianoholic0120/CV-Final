@@ -1,22 +1,53 @@
 # CV-Final
 
+![Pipeline](./images/Screenshot%202025-05-30%20at%2014.39.23.png)
+
 ## Requirements & Installation
 
-## File Structure
+You should prepare the following two environments to run our code.
+
+### Reloc3r - generate poses
+ - You can directly follow the desciption of the original [reloc3r github codebase](https://github.com/ffrivera0/reloc3r) for detailed installation setup. 
+ 
+ - However, we made slight modification to the file: 
+ eval_visloc_pose.py, ./reloc3r/datasets/sevenscenes_retrieval.py, and ./reloc3r/datasets/sevenscenes.py
+
+#### Create the environment using conda
+
+    conda create -n reloc3r python=3.11 cmake=3.14.0
+    conda activate reloc3r 
+    conda install pytorch torchvision pytorch-cuda=12.1 -c pytorch -c nvidia  # use the correct version of cuda for your system
+
+    pip install -r requirements.txt
+    # optional: you can also install additional packages to:
+    # - add support for HEIC images
+    pip install -r requirements_optional.txt    
+
+#### Compile cuda kernels for RoPE
+
+    cd croco/models/curope/
+    python setup.py build_ext --inplace
+    cd ../../../
+
+- The pre-trained model weights will automatically download when running the evaluation and demo code below.
+- Note that the pre-trained weights does not include 7scenes, which is crucial for valid comparison and testing.
+
+### Main body - 2D images & poses to 3D point cloud
+
+#### Create the environment using conda
+
+    conda env create -f environment.yml -n {scenes310}
+    conda activate {scenes310}
+    pip install -r requirements.txt
+
 
 ## How to run (examples)
 
-First, you have to generate poses for desired image sequence. 
+### To run reloc3r to generate poses
 
-> To sweep parameters (voxels, kf) of reconstruction based on ace0-generated poses:
+First change directory to ./reloc3r/
 
-    python cv25s_full_pipeline.py --data_root /path/to/your_file/with/7scenes/ --output_dir /path/to/save/your_results/ --voxels 0.0025,0.003 --kf 1,5
-
-> To compute accuracy w.r.t GT:
-    
-    python acc_comp.py --pred_folder /path/to/your_file/with/point_clouds/ --gt_folder /path/to/your_file/with/gt7scenes/
-
-> To run reloc3r to generate poses
+    cd ./reloc3r/
 
 Specify train/test split under ./reloc3r/datasets/sevenscenes_retrieval.py
 
@@ -28,9 +59,22 @@ Run reloc3r pipeline to generate poses_final.py
 
     python eval_visloc.py --model "Reloc3rRelpose(img_size=512)" --dataset_db "SevenScenesRetrieval(scene='{}', split='train')" --dataset_q "ne='{}', split='train')" --dataset_q "SevenScenesRetrieval(scene='{}', split='test')" --dataset_relpose "SevenScenesRelpose(scene='{}', pair_id-topk 10nesRetrieval(scene='{}', split={}, resolution={})" --scene "{scene}" --topk 10
 
-Put the generated poses_final.py into the folder of testing sequence to be evaluated, then run:
+Put the generated poses_final.py into the folder of testing sequence to be evaluated
+
+    cd ..
+
+### To reconstruct based on reloc3r-generated poses:
+run:
 
     python cv25s_full_pipeline_reloc3r.py --seq_dir /path/to/the_folder/7scenes/{scenes}/test/seq-{sequence_index}/ --output /path/to/the_file/of/{scenes}-seq-{sequence_index}.ply
+
+### To sweep parameters (voxels, kf) of reconstruction based on ace0-generated poses:
+
+    python cv25s_full_pipeline.py --data_root /path/to/your_file/with/7scenes/ --output_dir /path/to/save/your_results/ --voxels 0.0025,0.003 --kf 1,5
+
+### To compute accuracy w.r.t GT:
+    
+    python acc_comp.py --pred_folder /path/to/your_file/with/point_clouds/ --gt_folder /path/to/your_file/with/gt7scenes/
 
 
 
