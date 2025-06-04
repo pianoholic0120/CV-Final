@@ -1,6 +1,7 @@
 # CV-Final
 
-![Pipeline](./images/Screenshot%202025-05-30%20at%2014.39.23.png)
+![Pipeline - training data needed](./images/Screenshot%202025-06-04%20at%2022.38.17.png)
+![Pipeline - only testing data needed](./images/Screenshot%202025-06-04%20at%2022.38.36.png)
 
 ## Table of Contents
 
