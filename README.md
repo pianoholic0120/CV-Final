@@ -134,6 +134,7 @@ run:
 
     python cv25s_full_pipeline_reloc3r.py --seq_dir /path/to/the_folder/7scenes/{scenes}/test/seq-{sequence_index}/ --output /path/to/the_file/of/{scenes}-seq-{sequence_index}.ply
 
+It will take several minutes to an hour, depends on your number of frames.
 ### To run ACE0 to generate poses
 
 #### Data Preparation (for a specific sequence)

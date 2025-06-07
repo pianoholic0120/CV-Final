@@ -3,6 +3,7 @@ from pathlib import Path
 import numpy as np
 import open3d as o3d
 import cv2
+from tqdm import tqdm
 from scipy.spatial.transform import Rotation as R
 
 
@@ -76,7 +77,8 @@ def main():
     # accumulate
     pts_all, col_all, centres = [], [], []
 
-    for key, Twc in poses.items():
+    # Wrap the loop with tqdm
+    for key, Twc in tqdm(poses.items(), desc="Processing poses"):
         d_path = seq_dir / f"{key}{args.depth_suffix}"
         c_path = seq_dir / f"{key}{args.color_suffix}"
         if not d_path.exists() or not c_path.exists():
