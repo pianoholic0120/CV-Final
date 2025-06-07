@@ -119,7 +119,7 @@ Create desired scene under ./data/7scenes/{scene}/ with all seq-{seq_index}/ wit
 
 Run reloc3r pipeline to generate poses_final.py
 
-    python eval_visloc.py --model "Reloc3rRelpose(img_size=512)" --dataset_db "SevenScenesRetrieval(scene='{}', split='train')" --dataset_q "ne='{}', split='train')" --dataset_q "SevenScenesRetrieval(scene='{}', split='test')" --dataset_relpose "SevenScenesRelpose(scene='{}', pair_id-topk 10nesRetrieval(scene='{}', split={}, resolution={})" --scene "{scene}" --topk 10
+    python eval_visloc.py --model "Reloc3rRelpose(img_size=512)" --dataset_db "SevenScenesRetrieval(scene='{}', split='train')" --dataset_q "SevenScenesRetrieval(scene='{}', split='test')" --dataset_relpose "SevenScenesRelpose(scene='{}', pair_id={}, resolution={})" --scene "{scene}" --topk 10
 
 - if you come across ModuleNotFoundError: No module named 'h5py', you may pip install it or depend on conda where our version is 3.13.0
 
