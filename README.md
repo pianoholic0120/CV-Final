@@ -353,7 +353,7 @@ For example, only seq-03 is testing sequence for chess scene, seq-01, seq-02, se
 
 Then, you should be able to generate ./reloc3r/_db-q_pair_info/poses_final.txt for all 14 sequence desired one by one, as [here](#to-run-reloc3r-to-generate-poses) shows. You can also refer to the folder ./reloc3r_poses/ under this repository for all 14 estimated pose for these sequences.
 
-You are required to, then, put these txt files (change their names to poses_final.txt) into their corresponding testing sequences under your storage with 7scenes dataset. That is, we assume the 7scenes data you prepared is as follow:
+You should be to, then, put these txt files (change their names to poses_final.txt) into their corresponding testing sequences under your storage with 7scenes dataset (You don't actually need to put images under /home/username/storage/7scenes/, this is just an example. Only make sure the directory structure under /home/username/storage/7scenes/ is the same to us is fine).  That is, we assume the 7scenes data you prepared is as follow:
 
     /home/username/storage/7scenes/
     |-- chess
