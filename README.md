@@ -123,6 +123,21 @@ Run reloc3r pipeline to generate poses_final.py
 
 - if you come across ModuleNotFoundError: No module named 'h5py', you may pip install it or depend on conda where our version is 3.13.0
 
+- if you come across the issue saying that data must be a sequence (got NoneType) during pose generation of sparse sequences, this is probably due to the error of your data naming format under the testing sequence folder. For instance:
+
+        |-- chess
+            |-- seq-05 (sparse, please note the index!!!!!!!!!!!!!)
+                |-- frame-000000.color.png
+                |-- frame-000000.depth.png
+                |-- frame-000000.depth.proj.png
+                |-- frame-000000.pose.txt
+                |-- frame-000001.color.png
+                |-- frame-000001.depth.png
+                |-- frame-000001.depth.proj.png
+                |-- frame-000002.color.png
+                ...
+
+
 Put the generated poses_final.py into the folder of testing sequence to be evaluated
 
     cd ..
