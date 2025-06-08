@@ -1,6 +1,6 @@
-# CV-Final (2025 Spring)
+# National Taiwan University EEE5053 Computer Vision - Final Project : [Microsoft] 3D Reconstruction (2025 Spring)
 
-## Please refer to each branch for different functions and codes.
+## 📣 Please refer to each branch for different functions and codes.
 
     branch b10901151: main body, ACE0, Reloc3R, general comparison and method overview
   
