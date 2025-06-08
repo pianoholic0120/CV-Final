@@ -322,13 +322,13 @@ Note that you must specify the sequence number for which index of sequences are 
         'stairs': [2,3,5,6]
         },
     'seqs_test':{
-        'chess': [3],
-        'fire': [3], 
+        'chess': [3], # 5(sparse)
+        'fire': [3], # 4(sparse)
         'heads': [1],
         'office': [2], # 6, 7, 9
-        'pumpkin': [1],
+        'pumpkin': [1], # 7(sparse)
         'redkitchen': [3], # 4, 6, 12, 14
-        'stairs': [1]
+        'stairs': [1] # 4(sparse)
         },
     'n_frames': { # number of frames in training sequence
         'chess': 1000, 
