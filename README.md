@@ -486,7 +486,7 @@ You should be to, then, put these txt files (change their names to poses_final.t
 
 ### Reconstruciton
 
-Based on [this](#to-reconstruct-based-on-reloc3r-generated-poses), you can now generated the point cloud one by one. Alternatively, you can modify the bash file (generate_ply_files.sh and generate_sparse_ply_files.sh) for proper paths of yours. Then simply run them to get the 14 testing point clouds and 4 sparse testing point cloud respectively.
+Based on [this](#to-reconstruct-based-on-reloc3r-generated-poses), you can now generated the point cloud one by one. Alternatively, you can modify the bash file (generate_ply_files.sh and generate_sparse_ply_files.sh) for proper paths of yours. Then simply run them to get the 14 testing point clouds and 4 sparse testing point cloud respectively. (📍 be careful to check that in each sequence directory, the file "poses_final.txt" exists.)
 
     bash generate_ply_files.sh
     bash generate_sparse_ply_files.sh 
